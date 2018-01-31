@@ -374,7 +374,6 @@ class MAWaterWorld(AbstractMAEnv, EzPickle):
                     (self.np_random.rand(2,) - 0.5) * self.poison_speed)
 
         ev_encounters, which_pursuer_encounterd_ev = self._caught(is_colliding_ev_Np_Ne, 1)
-
         # Update reward based on these collisions
         if self.reward_mech == 'global':
             rewards += (
@@ -446,7 +445,7 @@ class MAWaterWorld(AbstractMAEnv, EzPickle):
             color = (128, 128, 0)
             cv2.circle(img,
                        tuple((obstaclex_2 * screen_size).astype(int)),
-                       int(self.obstacle_radius * screen_size), color, -1, lineType=cv2.LINE_AA)
+                       int(self.obstacle_radius * screen_size), color, -1, lineType=cv2.CV_AA)
         # Pursuers
         for pursuer in self._pursuers:
             for k in range(pursuer._n_sensors):
@@ -454,23 +453,23 @@ class MAWaterWorld(AbstractMAEnv, EzPickle):
                 cv2.line(img,
                          tuple((pursuer.position * screen_size).astype(int)),
                          tuple(((pursuer.position + pursuer._sensor_range * pursuer.sensors[k]) *
-                                screen_size).astype(int)), color, 1, lineType=cv2.LINE_AA)
+                                screen_size).astype(int)), color, 1, lineType=cv2.CV_AA)
                 cv2.circle(img,
                            tuple((pursuer.position * screen_size).astype(int)),
-                           int(pursuer._radius * screen_size), (255, 0, 0), -1, lineType=cv2.LINE_AA)
+                           int(pursuer._radius * screen_size), (255, 0, 0), -1, lineType=cv2.CV_AA)
         # Evaders
         for evader in self._evaders:
             color = (0, 255, 0)
             cv2.circle(img,
                        tuple((evader.position * screen_size).astype(int)),
-                       int(evader._radius * screen_size), color, -1, lineType=cv2.LINE_AA)
+                       int(evader._radius * screen_size), color, -1, lineType=cv2.CV_AA)
 
         # Poison
         for poison in self._poisons:
             color = (0, 0, 255)
             cv2.circle(img,
                        tuple((poison.position * screen_size).astype(int)),
-                       int(poison._radius * screen_size), color, -1, lineType=cv2.LINE_AA)
+                       int(poison._radius * screen_size), color, -1, lineType=cv2.CV_AA)
 
         opacity = 0.4
         bg = np.ones((screen_size, screen_size, 3), dtype=np.uint8) * 255

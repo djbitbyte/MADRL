@@ -72,7 +72,7 @@ class Archea(Agent):
         return sensorvals_K_N
 
 
-class MAWaterWorld(AbstractMAEnv, EzPickle):
+class MAWaterWorld_mod(AbstractMAEnv, EzPickle):
 
     def __init__(self, n_pursuers, n_evaders, n_coop=2, n_poison=10, radius=0.015,
                  obstacle_radius=0.2, obstacle_loc=np.array([0.5, 0.5]), ev_speed=0.01,
@@ -106,11 +106,11 @@ class MAWaterWorld(AbstractMAEnv, EzPickle):
         self._speed_features = speed_features
         self.seed()
         self._pursuers = [
-            Archea(npu + 1, self.radius, self.n_sensors, self.sensor_range[npu], addid=self._addid,
+            Archea(npu + 1, self.radius * 3 / 4, self.n_sensors, self.sensor_range[npu], addid=self._addid,
                    speed_features=self._speed_features) for npu in range(self.n_pursuers)
         ]
         self._evaders = [
-            Archea(nev + 1, self.radius * 2, self.n_pursuers, self.sensor_range.mean() / 2)
+            Archea(nev + 1, self.radius * 3 / 4, self.n_pursuers, self.sensor_range.mean() / 2)
             for nev in range(self.n_evaders)
         ]
         self._poisons = [
@@ -180,11 +180,11 @@ class MAWaterWorld(AbstractMAEnv, EzPickle):
     def _caught(self, is_colliding_N1_N2, n_coop):
         """ Checke whether collision results in catching the object
 
-        This is because you need `n_coop` agents to collide with the object to actually catch it
+        This is because you need exactly `n_coop` agents to collide with the object to actually catch it
         """
         # number of N1 colliding with given N2
         n_collisions_N2 = is_colliding_N1_N2.sum(axis=0)
-        is_caught_cN2 = np.where(n_collisions_N2 >= n_coop)[0]
+        is_caught_cN2 = np.where(n_collisions_N2 == n_coop)[0]
 
         # number of N2 colliding with given N1
         who_collisions_N1_cN2 = is_colliding_N1_N2[:, is_caught_cN2]
@@ -374,7 +374,6 @@ class MAWaterWorld(AbstractMAEnv, EzPickle):
                     (self.np_random.rand(2,) - 0.5) * self.poison_speed)
 
         ev_encounters, which_pursuer_encounterd_ev = self._caught(is_colliding_ev_Np_Ne, 1)
-
         # Update reward based on these collisions
         if self.reward_mech == 'global':
             rewards += (
@@ -401,13 +400,21 @@ class MAWaterWorld(AbstractMAEnv, EzPickle):
             # Bounce object if it hits a wall
             if all(evader.position != np.clip(evader.position, 0, 1)):
                 evader.set_velocity(-1 * evader.velocity)
+            elif evader.position[0] != np.clip(evader.position[0], 0, 1):
+                evader.set_velocity(np.array([-1, 1]) * evader.velocity)
+            elif evader.position[1] != np.clip(evader.position[1], 0, 1):
+                evader.set_velocity(np.array([1, -1]) * evader.velocity)
 
         for poison in self._poisons:
             # Move objects
             poison.set_position(poison.position + poison.velocity)
             # Bounce object if it hits a wall
-            if all(poison.position != np.clip(poison.position, 0, 1)):
+            if any(poison.position != np.clip(poison.position, 0, 1)):
                 poison.set_velocity(-1 * poison.velocity)
+            elif poison.position[0] != np.clip(poison.position[0], 0, 1):
+                poison.set_velocity(np.array([-1, 1]) * poison.velocity)
+            elif poison.position[1] != np.clip(poison.position[1], 0, 1):
+                poison.set_velocity(np.array([1, -1]) * poison.velocity)
 
         obslist = []
         for inp in range(self.n_pursuers):
