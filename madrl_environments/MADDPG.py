@@ -160,9 +160,11 @@ class MADDPG:
             critics_agent_grad = []
             actors_agent_grad = []
             for x in self.models.critics[agent].parameters():
-                critics_agent_grad.append(th.mean(x.grad).data[0])
+                critics_agent_grad.append(x.grad.data.norm(2))
+                # critics_agent_grad.append(th.mean(x.grad).data[0])
             for x in self.models.actors[agent].parameters():
-                actors_agent_grad.append(th.mean(x.grad).data[0])
+                actors_agent_grad.append(x.grad.data.norm(2))
+                # actors_agent_grad.append(th.mean(x.grad).data[0])
 
             critics_grad.append(critics_agent_grad)
             actors_grad.append(actors_agent_grad)
@@ -188,7 +190,7 @@ class MADDPG:
 
             act += Variable(th.from_numpy(np.random.randn(2) * self.var[i]).type(FloatTensor))
 
-            if self.episode_done > self.episodes_before_train and self.episode_done % 100 == 0 and self.var[i] > 0.05:
+            if self.episode_done > self.episodes_before_train and self.var[i] > 0.05:   # and self.episode_done % 100 == 0
                 self.var[i] *= 0.999998
 
             act = th.clamp(act, -1.0, 1.0)

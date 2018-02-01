@@ -12,10 +12,10 @@ class Critic(nn.Module):
         obs_dim = dim_observation * n_agent
         act_dim = self.dim_action * n_agent
 
-        self.FC1 = nn.Linear(obs_dim, 1024)
-        self.FC2 = nn.Linear(1024+act_dim, 512)
-        self.FC3 = nn.Linear(512, 300)
-        self.FC4 = nn.Linear(300, 1)
+        self.FC1 = nn.Linear(obs_dim, 512)  # 1024
+        self.FC2 = nn.Linear(512+act_dim, 256)  # 512
+        self.FC3 = nn.Linear(256, 100)  # 300
+        self.FC4 = nn.Linear(100, 1)
 
     # obs: batch_size * obs_dim
     def forward(self, obs, acts):
@@ -28,9 +28,9 @@ class Critic(nn.Module):
 class Actor(nn.Module):
     def __init__(self, dim_observation, dim_action):
         super(Actor, self).__init__()
-        self.FC1 = nn.Linear(dim_observation, 500)
-        self.FC2 = nn.Linear(500, 128)
-        self.FC3 = nn.Linear(128, dim_action)
+        self.FC1 = nn.Linear(dim_observation, 256)  # 500
+        self.FC2 = nn.Linear(256, 64)  # 128
+        self.FC3 = nn.Linear(64, dim_action)
 
     # action output between -2 and 2
     def forward(self, obs):
