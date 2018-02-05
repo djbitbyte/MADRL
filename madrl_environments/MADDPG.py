@@ -31,10 +31,8 @@ class MADDPG:
             self.models = Models(n_agents, dim_obs, dim_act)
             self.actors_target = deepcopy(self.models.actors)
             self.critics_target = deepcopy(self.models.critics)
-            self.critic_optimizer = [Adam(x.parameters(),
-                                          lr=0.001) for x in self.models.critics]
-            self.actor_optimizer = [Adam(x.parameters(),
-                                         lr=0.0001) for x in self.models.actors]
+            self.critic_optimizer = [Adam(x.parameters(), lr=0.0001) for x in self.models.critics]  # 0.001
+            self.actor_optimizer = [Adam(x.parameters(), lr=0.00001) for x in self.models.actors]   # 0.0001
             self.memory = ReplayMemory(capacity)
             self.var = [1.0 for i in range(n_agents)]
         else:
@@ -124,12 +122,6 @@ class MADDPG:
             loss_Q = nn.MSELoss()(current_Q, target_Q.detach())
             loss_Q.backward()
 
-            '''
-            # gradient clipping
-            if self.clip is not None:
-                nn.utils.clip_grad_norm(self.model.parameters(), self.clip)
-            '''
-
             self.critic_optimizer[agent].step()
 
             # actor network
@@ -174,6 +166,12 @@ class MADDPG:
             for i in range(self.n_agents):
                 soft_update(self.critics_target[i], self.models.critics[i], self.tau)
                 soft_update(self.actors_target[i], self.models.actors[i], self.tau)
+
+        '''
+        # gradient clipping
+        if self.clip is not None:
+            nn.utils.clip_grad_norm(self.model.parameters(), self.clip)
+        '''
 
         # return c_loss, a_loss  #, critics_grad, actors_grad
         return critics_grad, actors_grad

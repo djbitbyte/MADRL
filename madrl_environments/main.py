@@ -168,7 +168,7 @@ for i_episode in range(n_episode):
                         opts=dict(
                             ylabel='Average Gradient',
                             xlabel='Episode',
-                            title='Average Gradient for critics network of agent 1',
+                            title='Norm of Gradient for critics network of agent 1',
                             legend=['Grad-%d' % i for i in range(8)]))
     else:
         vis.line(X=np.array([i_episode]),
@@ -183,7 +183,7 @@ for i_episode in range(n_episode):
                         opts=dict(
                             ylabel='Average Gradient',
                             xlabel='Episode',
-                            title='Average Gradient for critics network of agent 2',
+                            title='Norm of Gradient for critics network of agent 2',
                             legend=['Grad-%d' % i for i in range(8)]))
     else:
         vis.line(X=np.array([i_episode]),
@@ -198,7 +198,7 @@ for i_episode in range(n_episode):
                         opts=dict(
                             ylabel='Average Gradient',
                             xlabel='Episode',
-                            title='Average Gradient for actors network of agent 1',
+                            title='Norm of Gradient for actors network of agent 1',
                             legend=['Grad-%d' % i for i in range(6)]))
     else:
         vis.line(X=np.array([i_episode]),
@@ -213,7 +213,7 @@ for i_episode in range(n_episode):
                         opts=dict(
                             ylabel='Average Gradient',
                             xlabel='Episode',
-                            title='Average Gradient for critics network of agent 2',
+                            title='Norm of Gradient for actors network of agent 2',
                             legend=['Grad-%d' % i for i in range(6)]))
     else:
         vis.line(X=np.array([i_episode]),
